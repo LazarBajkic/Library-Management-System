@@ -71,10 +71,14 @@ public class AdminRegister extends JFrame implements ActionListener{
     }
 
     public void CreateGUI(){
+        
+        //the frame is setup
         this.setSize(500,500);
         this.setLayout(null);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setVisible(true);
+        
+        //The frame adds all the components
         this.add(userName);
         this.add(ID);
         this.add(started);
@@ -89,25 +93,33 @@ public class AdminRegister extends JFrame implements ActionListener{
     public void actionPerformed(ActionEvent e) {
         // TODO Auto-generated method stub
         
+        //return to login screen
         if(e.getSource()==loginReturn){
             this.dispose();
             LoginScreen LS = new LoginScreen();
         }
 
+        //error in case a field is left empty
         else if(IDField.getText().isEmpty() || userNameField.getText().isEmpty()){
             JOptionPane.showMessageDialog(null, "You must fill out all the fields!");            
         }
         
+        //a successful admin registration if all fields where filled out
         else if(!IDField.getText().isEmpty() && !userNameField.getText().isEmpty()){
             JOptionPane.showMessageDialog(null, "Successfully registered new admin!");
+
+            //The strings tkae the input from the textfields which are then passsed on into the function where it is then stored in a database
             String id = IDField.getText();
             String name = userNameField.getText();
             String startedWorking = startedWorkField.getText();
             String query="Insert into Admins (ID,Name,StartedWorking) values ('"+id+"','"+name+"','"+startedWorking+"')";
+            
             RegisterAdminIntoDB(id, name,startedWorking,query);
         }
     }
 
+    
+    //Register admin credentials into a database
     public void RegisterAdminIntoDB(String id,String name,String startedWorking,String query){
         try {
             Connection con=DriverManager.getConnection(url,uname,password);

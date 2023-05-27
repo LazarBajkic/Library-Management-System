@@ -39,13 +39,16 @@ public class UserDisplay extends JFrame implements ActionListener{
         
         CreateGui();
 
+        //add button setup
         add.setPreferredSize(new Dimension(100, 30));
         add.addActionListener(this);
         add.setLocation(20, 20);
         add.setFocusable(false);
 
+        //input book name label 
         inputBookName.setPreferredSize(new Dimension(75, 30));
 
+        //add name textfield
         userInputAddName.setPreferredSize(new Dimension(100, 30));
 
     }

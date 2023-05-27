@@ -110,33 +110,43 @@ public class UserRegister extends JFrame implements ActionListener{
     public void actionPerformed(ActionEvent e) {
         // TODO Auto-generated method stub
 
-          
+        //go back to the login screen
         if(e.getSource()==loginReturn){
             this.dispose();
             LoginScreen LS = new LoginScreen();
         }
 
+        //error in case a field is left empty
         else if(IDField.getText().isEmpty() || userNameField.getText().isEmpty() || validUntilField.getText().isEmpty() || IssuedField.getText().isEmpty()){
             JOptionPane.showMessageDialog(null, "You must fill out all the fields!");   
         }
         
+        //a successful user registration if all the fields are filled out
         else if(!IDField.getText().isEmpty() && !userNameField.getText().isEmpty()){
+            
             JOptionPane.showMessageDialog(null, "Successfully registered new user!"); 
+            
+            //the strings take the input values from the textfields and then pass them into the RegisterUserIntoDB function 
             String id = IDField.getText();
             String name = userNameField.getText();
             String validUnt = validUntilField.getText();
             String issued = IssuedField.getText();
             String query="Insert into Users (ID,Name,ValidUnt,Iss) values ('"+id+"','"+name+"','"+validUnt+"','"+issued+"')";
+            
             RegisterUserIntoDB(id, name, validUnt, issued, query);
         }
     }
 
+    //Register admin credentials into a database
     public void RegisterUserIntoDB(String id,String name,String validU,String Iss,String query){
+        
         try {
             Connection con=DriverManager.getConnection(url,uname,password);
             Statement statement=con.createStatement();
             statement.executeUpdate(query);
-        } catch (SQLException e1) {
+        } 
+        
+        catch (SQLException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }            

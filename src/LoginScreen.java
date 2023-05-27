@@ -2,9 +2,13 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-
+import java.sql.Statement;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import javax.swing.JButton;
 
@@ -29,6 +33,9 @@ public class LoginScreen extends JFrame implements ActionListener{
     String uname="root";
     String url="jdbc:mysql://localhost:3306/Library";
     String password="Ceramida";
+
+    String checkUser="Select Name,ID from users";
+    String checkAdmin="Select Name,ID from admins";
 
     LoginScreen(){
         
@@ -135,24 +142,41 @@ public class LoginScreen extends JFrame implements ActionListener{
 
         //user validation
         if(e.getSource()==confirm && isUser==true){  
+            
+             //the function for log in is called passing in the boolean 'correct' as an arguemnt
+            boolean correct=true;
+            
+            try {
+                CheckUserCredentials(correct);
+            } catch (SQLException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+
+            //if a field was left empty,an error message will be shown
             if(IDField.getText().isEmpty() || userNameField.getText().isEmpty()){
                 JOptionPane.showMessageDialog(null, "You must fill out all the fields!");            
-            }
-            else if(!IDField.getText().isEmpty() && !userNameField.getText().isEmpty()){
-                UserDisplay UD = new UserDisplay();
-                this.dispose();
             }
         }
         
         //admin validation
-        if(e.getSource()==confirm && isAdmin==true){  
+        if(e.getSource()==confirm && isAdmin==true){
+            
+            //the function for log in is called passing in the boolean 'correct' as an arguemnt 
+            boolean correct=true;  
+            
+            try {
+                CheckAdminCredentials(correct);
+            } catch (SQLException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+
+            //if a field was left empty,an error message will be shown
             if(IDField.getText().isEmpty() || userNameField.getText().isEmpty()){
                 JOptionPane.showMessageDialog(null, "You must fill out all the fields!");            
             }
-            else if(!IDField.getText().isEmpty() && !userNameField.getText().isEmpty()){
-                AdminDisplay AD = new AdminDisplay();
-                this.dispose();            
-            }
+          
         }
         
         //register new admin
@@ -167,6 +191,60 @@ public class LoginScreen extends JFrame implements ActionListener{
             UserRegister UR = new UserRegister();
         }
         
+    }
+
+    
+    //Check the credentials when logging in as a user
+    public boolean CheckUserCredentials(boolean correct) throws SQLException{
+        
+        Connection con=DriverManager.getConnection(url,uname,password);
+        Statement statement=con.createStatement();
+        ResultSet set = statement.executeQuery(checkUser);
+        
+        while(set.next()){
+            
+            //if all the fields where filled out,and the credentials of the person trying to log in are in the respective database,they will be redirected to the correct panel  
+            if(IDField.getText().equals(set.getString("ID"))&& userNameField.getText().equals(set.getString("Name"))){
+                UserDisplay UD = new UserDisplay();
+                this.dispose();
+                correct=true;
+            }
+            
+            //if the fields are not empty,but the credentials do not match the ones in the database,an error message will be shown 
+            else if(!IDField.getText().equals(set.getString("ID")) || !userNameField.getText().equals(set.getString("Name"))){
+                JOptionPane.showMessageDialog(null, "Incorrect credentials,try again!");
+                correct=false;
+            }
+            
+        }
+        return correct;
+    }
+
+
+    //Check the credentials when logging in as an admin
+    public boolean CheckAdminCredentials(boolean correct) throws SQLException{
+        
+        Connection con=DriverManager.getConnection(url,uname,password);
+        Statement statement=con.createStatement();
+        ResultSet set = statement.executeQuery(checkAdmin);
+        
+        while(set.next()){
+            
+            //if all the fields where filled out,and the credentials of the person trying to log in are in the respective database,they will be redirected to the correct panel 
+            if(IDField.getText().equals(set.getString("ID"))&& userNameField.getText().equals(set.getString("Name"))){
+                AdminDisplay AD = new AdminDisplay();
+                this.dispose();
+                correct=true;
+            }
+            
+            //if the fields are not empty,but the credentials do not match the ones in the database,an error message will be shown 
+            else if(!IDField.getText().equals(set.getString("ID")) || !userNameField.getText().equals(set.getString("Name"))){
+                JOptionPane.showMessageDialog(null, "Incorrect credentials,try again!");
+                correct=false;
+            }
+            
+        }        
+        return correct;    
     }
 
 }
